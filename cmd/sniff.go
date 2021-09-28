@@ -18,6 +18,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"time"
@@ -35,17 +36,14 @@ type Credential struct {
 	LastUsed    time.Time `json:"lastUsed"`
 }
 
-type Credentials struct {
-	Credentials []Credential `json:"credentials"`
-}
-
 var (
 	application string
-	username string
-	password string
-	email string
+	username    string
+	password    string
+	email       string
 	description string
 )
+
 // sniffCmd represents the sniff command
 var sniffCmd = &cobra.Command{
 	Use:   "sniff",
@@ -58,30 +56,47 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("sniff called", application, username, password, email, description)
-		// Open our jsonFile
 		jsonFile, err := os.Open("creds.json")
 		// if we os.Open returns an error then handle it
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println("Successfully Opened creds.json")
-		// defer the closing of our jsonFile so that we can parse it later on
-		defer jsonFile.Close()
+		// read our opened xmlFile as a byte array.
+		jsonText, _ := ioutil.ReadAll(jsonFile)
 
-		byteValue, _ := ioutil.ReadAll(jsonFile)
-		var credentials Credentials
+		var credentials []Credential
 
-		json.Unmarshal(byteValue, credentials)
-		for i := 0; i< len(credentials.Credentials); i++ {
-			fmt.Println("app name", credentials.Credentials[i].App)
+		err = json.Unmarshal([]byte(jsonText), &credentials)
+
+		newCredential := Credential{
+			Email:       "rupeshharode@gmail.com",
+			Username:    "techytoes",
+			Password:    "abc123",
+			App:         "anything",
+			Description: description,
+			Created:     time.Now(),
+			LastUsed:    time.Now(),
 		}
 
+		credentials = append(credentials, newCredential)
+		// now Marshal it
+		result, _ := json.Marshal(credentials)
+
+		f, err := os.OpenFile("creds.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		n, err := io.WriteString(f, string(result))
+		if err != nil {
+			fmt.Println(n, err)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(sniffCmd)
-	sniffCmd.Flags().StringVarP(&application, "application", "", "", "Help message for toggle")
+	sniffCmd.Flags().StringVarP(&application, "app", "", "", "Help message for toggle")
 	sniffCmd.Flags().StringVarP(&username, "username", "", "", "Help message for toggle")
 	sniffCmd.Flags().StringVarP(&password, "password", "", "", "Help message for toggle")
 	sniffCmd.Flags().StringVarP(&email, "email", "", "", "Help message for toggle")

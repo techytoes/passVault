@@ -16,7 +16,10 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -33,6 +36,31 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("spit called")
+		// Open our jsonFile
+		jsonFile, err := os.Open("creds.json")
+		// if we os.Open returns an error then handle it
+		if err != nil {
+			fmt.Println(err)
+		}
+		// read our opened xmlFile as a byte array.
+		byteValue, _ := ioutil.ReadAll(jsonFile)
+
+		// we initialize our Users array
+		var credentials []Credential
+
+		// we unmarshal our byteArray which contains our
+		// jsonFile's content into 'users' which we defined above
+		json.Unmarshal(byteValue, &credentials)
+
+		// we iterate through every user within our users array and
+		// print out the user Type, their name, and their facebook url
+		// as just an example
+		for i := 0; i < len(credentials); i++ {
+			fmt.Println("User Type: " + credentials[i].App)
+			fmt.Println("User Age: " + credentials[i].App)
+			//fmt.Println("User Name: " + users.Users[i].Name)
+			//fmt.Println("Facebook Url: " + users.Users[i].Social.Facebook)
+		}
 	},
 }
 
