@@ -18,11 +18,12 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"passVault/helpers"
+	"passVault/models"
 
 	"github.com/spf13/cobra"
 )
+
 
 // spitCmd represents the spit command
 var spitCmd = &cobra.Command{
@@ -35,45 +36,25 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("spit called")
-		// Open our jsonFile
-		jsonFile, err := os.Open("creds.json")
-		// if we os.Open returns an error then handle it
-		if err != nil {
-			fmt.Println(err)
+		// Opening JSON file
+		jsonText := helpers.ReadJson("creds.json")
+
+		// Unmarshalling existing content of the JSON file
+		var credentials []models.Credential
+		if err := json.Unmarshal([]byte(jsonText), &credentials); err != nil {
+			panic(err)
 		}
-		// read our opened xmlFile as a byte array.
-		byteValue, _ := ioutil.ReadAll(jsonFile)
 
-		// we initialize our Users array
-		var credentials []Credential
-
-		// we unmarshal our byteArray which contains our
-		// jsonFile's content into 'users' which we defined above
-		json.Unmarshal(byteValue, &credentials)
-
-		// we iterate through every user within our users array and
-		// print out the user Type, their name, and their facebook url
-		// as just an example
-		for i := 0; i < len(credentials); i++ {
-			fmt.Println("User Type: " + credentials[i].App)
-			fmt.Println("User Age: " + credentials[i].App)
-			//fmt.Println("User Name: " + users.Users[i].Name)
-			//fmt.Println("Facebook Url: " + users.Users[i].Social.Facebook)
+		for i:=0; i<len(credentials); i++ {
+			if credentials[i].App == AppName {
+				fmt.Println(credentials[i].App, credentials[i].Email, credentials[i].Username, credentials[i].Password)
+			}
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(spitCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// spitCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// spitCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	sniffCmd.Flags().StringVarP(&AppName, "app", "", "", "application/website for the credential")
+	sniffCmd.Flags().StringVarP(&UserName, "username", "", "", "username for the app")
 }

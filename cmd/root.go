@@ -25,6 +25,12 @@ import (
 
 var cfgFile string
 
+var (
+	UserName string
+	AppName  string
+	Email    string
+)
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "passvault",
@@ -60,6 +66,10 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	rootCmd.PersistentFlags().StringVarP(&AppName, "app", "", "", "application/website for the credential")
+	rootCmd.PersistentFlags().StringVarP(&Email, "email", "", "", "email for the app")
+	rootCmd.PersistentFlags().StringVarP(&UserName, "username", "", "", "username for the app")
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -25,10 +25,7 @@ import (
 )
 
 var (
-	application string
-	username    string
 	password    string
-	email       string
 	description string
 )
 
@@ -55,10 +52,10 @@ to quickly create a Cobra application.`,
 
 		// Create new credential object
 		newCredential := models.Credential{
-			Email:       email,
-			Username:    username,
+			Email:       Email,
+			Username:    UserName,
 			Password:    password,
-			App:         application,
+			App:         AppName,
 			Description: description,
 			Created:     time.Now(),
 			LastUsed:    time.Now(),
@@ -74,9 +71,6 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(sniffCmd)
-	sniffCmd.Flags().StringVarP(&application, "app", "", "", "application/website for the credential")
-	sniffCmd.Flags().StringVarP(&username, "username", "", "", "username for the app")
 	sniffCmd.Flags().StringVarP(&password, "password", "", "", "password for the app")
-	sniffCmd.Flags().StringVarP(&email, "email", "", "", "email for the app")
 	sniffCmd.Flags().StringVarP(&description, "desc", "", "", "any description for the credential info")
 }
