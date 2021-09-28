@@ -1,12 +1,12 @@
 [
   {
-    "email": "rupesharode@gmail.com",
-    "username": "",
-    "password": "Un!v9r$aL@facebook",
-    "app": "facebook",
+    "email": "rupeshharode@gmail.com",
+    "username": "techytoes",
+    "password": "abc123",
+    "app": "anything",
     "description": "",
-    "created": "0001-01-01T00:00:00Z",
-    "lastUsed": "0001-01-01T00:00:00Z"
+    "created": "2021-09-28T15:15:28.553502+05:30",
+    "lastUsed": "2021-09-28T15:15:28.553502+05:30"
   },
   {
     "email": "rupeshharode@gmail.com",
@@ -14,16 +14,7 @@
     "password": "abc123",
     "app": "anything",
     "description": "",
-    "created": "2021-09-28T12:34:42.917093+05:30",
-    "lastUsed": "2021-09-28T12:34:42.917093+05:30"
-  },
-  {
-    "email": "rupeshharode@gmail.com",
-    "username": "techytoes",
-    "password": "abc123",
-    "app": "anything",
-    "description": "",
-    "created": "2021-09-28T12:38:18.22113+05:30",
-    "lastUsed": "2021-09-28T12:38:18.22113+05:30"
+    "created": "2021-09-28T15:15:39.604663+05:30",
+    "lastUsed": "2021-09-28T15:15:39.604663+05:30"
   }
 ]

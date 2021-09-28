@@ -17,24 +17,12 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
-	"io"
-	"io/ioutil"
-	"os"
 	"time"
 
 	"github.com/spf13/cobra"
+	"passVault/helpers"
+	"passVault/models"
 )
-
-type Credential struct {
-	Email       string    `json:"email"`
-	Username    string    `json:"username"`
-	Password    string    `json:"password"`
-	App         string    `json:"app"`
-	Description string    `json:"description"`
-	Created     time.Time `json:"created"`
-	LastUsed    time.Time `json:"lastUsed"`
-}
 
 var (
 	application string
@@ -47,58 +35,48 @@ var (
 // sniffCmd represents the sniff command
 var sniffCmd = &cobra.Command{
 	Use:   "sniff",
-	Short: "A brief description of your command",
+	Short: "Fetch credential info related to an application",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("sniff called", application, username, password, email, description)
-		jsonFile, err := os.Open("creds.json")
-		// if we os.Open returns an error then handle it
-		if err != nil {
-			fmt.Println(err)
+		// Opening JSON file
+		jsonText := helpers.ReadJson("creds.json")
+
+		// Unmarshalling existing content of the JSON file
+		var credentials []models.Credential
+		if err := json.Unmarshal([]byte(jsonText), &credentials); err != nil {
+			panic(err)
 		}
-		// read our opened xmlFile as a byte array.
-		jsonText, _ := ioutil.ReadAll(jsonFile)
 
-		var credentials []Credential
-
-		err = json.Unmarshal([]byte(jsonText), &credentials)
-
-		newCredential := Credential{
-			Email:       "rupeshharode@gmail.com",
-			Username:    "techytoes",
-			Password:    "abc123",
-			App:         "anything",
+		// Create new credential object
+		newCredential := models.Credential{
+			Email:       email,
+			Username:    username,
+			Password:    password,
+			App:         application,
 			Description: description,
 			Created:     time.Now(),
 			LastUsed:    time.Now(),
 		}
-
 		credentials = append(credentials, newCredential)
 		// now Marshal it
 		result, _ := json.Marshal(credentials)
 
-		f, err := os.OpenFile("creds.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		n, err := io.WriteString(f, string(result))
-		if err != nil {
-			fmt.Println(n, err)
-		}
+		// Overwrite the JSON file with the new data.
+		helpers.OverwriteJson("creds.json", result)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(sniffCmd)
-	sniffCmd.Flags().StringVarP(&application, "app", "", "", "Help message for toggle")
-	sniffCmd.Flags().StringVarP(&username, "username", "", "", "Help message for toggle")
-	sniffCmd.Flags().StringVarP(&password, "password", "", "", "Help message for toggle")
-	sniffCmd.Flags().StringVarP(&email, "email", "", "", "Help message for toggle")
-	sniffCmd.Flags().StringVarP(&description, "desc", "", "", "Help message for toggle")
+	sniffCmd.Flags().StringVarP(&application, "app", "", "", "application/website for the credential")
+	sniffCmd.Flags().StringVarP(&username, "username", "", "", "username for the app")
+	sniffCmd.Flags().StringVarP(&password, "password", "", "", "password for the app")
+	sniffCmd.Flags().StringVarP(&email, "email", "", "", "email for the app")
+	sniffCmd.Flags().StringVarP(&description, "desc", "", "", "any description for the credential info")
 }
