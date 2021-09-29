@@ -49,12 +49,18 @@ to quickly create a Cobra application.`,
 		if err := json.Unmarshal([]byte(jsonText), &credentials); err != nil {
 			panic(err)
 		}
+		
+		// Create encrypted password
+		encPassword, err := helpers.Encrypt([]byte(password), []byte(EncKey))
+		if err != nil {
+			panic(err)
+		}
 
 		// Create new credential object
 		newCredential := models.Credential{
 			Email:       Email,
 			Username:    UserName,
-			Password:    password,
+			Password:    string(encPassword),
 			App:         AppName,
 			Description: description,
 			Created:     time.Now(),

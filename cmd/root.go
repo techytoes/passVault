@@ -29,6 +29,7 @@ var (
 	UserName string
 	AppName  string
 	Email    string
+	EncKey   string
 )
 
 // rootCmd represents the base command when called without any subcommands
