@@ -19,6 +19,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var EncKey string
+
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -29,10 +31,13 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {},
+	Run: func(cmd *cobra.Command, args []string) {
+		keyTerm, _ := cmd.Flags().GetString("key")
+		EncKey = keyTerm
+	},
 }
 
 func init() {
 	rootCmd.AddCommand(initCmd)
-	initCmd.PersistentFlags().StringVarP(&EncKey, "key", "", "", "Help message for toggle")
+	initCmd.Flags().String("key", "", "Help message for toggle")
 }

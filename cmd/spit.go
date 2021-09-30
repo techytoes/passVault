@@ -36,7 +36,9 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Opening JSON file
+		app, _ := cmd.Flags().GetString("app")
+		//username, _ := cmd.Flags().GetString("username")
+		// Opening JSON files
 		jsonText := helpers.ReadJson("creds.json")
 
 		// Unmarshalling existing content of the JSON file
@@ -44,10 +46,20 @@ to quickly create a Cobra application.`,
 		if err := json.Unmarshal([]byte(jsonText), &credentials); err != nil {
 			panic(err)
 		}
-
+		fmt.Println(EncKey)
+		if len(EncKey) != 32 {
+			EncKey = "the-key-has-to-be-32-bytes-long!"
+		}
+		//fmt.Println(EncKey)
 		for i:=0; i<len(credentials); i++ {
-			if credentials[i].App == AppName {
-				fmt.Println(credentials[i].App, credentials[i].Email, credentials[i].Username, credentials[i].Password)
+			if credentials[i].App == app {
+				fmt.Println(credentials[i].App, credentials[i].Email, credentials[i].Username)
+				plaintext, err := helpers.Decrypt(credentials[i].Password, []byte(EncKey))
+				if err != nil {
+					panic(err)
+				}
+				pass := string(plaintext[:])
+				fmt.Println(pass)
 			}
 		}
 	},
@@ -55,6 +67,6 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(spitCmd)
-	sniffCmd.Flags().StringVarP(&AppName, "app", "", "", "application/website for the credential")
-	sniffCmd.Flags().StringVarP(&UserName, "username", "", "", "username for the app")
+	spitCmd.Flags().String("app", "", "application/website for the credential")
+	spitCmd.Flags().String("username", "", "username for the app")
 }

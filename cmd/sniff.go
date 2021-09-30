@@ -41,6 +41,12 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// Get flag values
+		app, _ := cmd.Flags().GetString("app")
+		description, _ := cmd.Flags().GetString("desc")
+		username, _ := cmd.Flags().GetString("username")
+		email, _ := cmd.Flags().GetString("email")
+		password, _ := cmd.Flags().GetString("password")
 		// Opening JSON file
 		jsonText := helpers.ReadJson("creds.json")
 
@@ -49,7 +55,10 @@ to quickly create a Cobra application.`,
 		if err := json.Unmarshal([]byte(jsonText), &credentials); err != nil {
 			panic(err)
 		}
-		
+		if len(EncKey) != 32 {
+			EncKey = "the-key-has-to-be-32-bytes-long!"
+			EncKey = "chotu-shanti-suraj-28-1315-betul"
+		}
 		// Create encrypted password
 		encPassword, err := helpers.Encrypt([]byte(password), []byte(EncKey))
 		if err != nil {
@@ -58,10 +67,10 @@ to quickly create a Cobra application.`,
 
 		// Create new credential object
 		newCredential := models.Credential{
-			Email:       Email,
-			Username:    UserName,
-			Password:    string(encPassword),
-			App:         AppName,
+			Email:       email,
+			Username:    username,
+			Password:    encPassword,
+			App:         app,
 			Description: description,
 			Created:     time.Now(),
 			LastUsed:    time.Now(),
@@ -77,6 +86,9 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(sniffCmd)
-	sniffCmd.Flags().StringVarP(&password, "password", "", "", "password for the app")
-	sniffCmd.Flags().StringVarP(&description, "desc", "", "", "any description for the credential info")
+	sniffCmd.Flags().String("password", "", "password for the app")
+	sniffCmd.Flags().String("desc", "", "any description for the credential info")
+	sniffCmd.Flags().String("app", "", "application/website for the credential")
+	sniffCmd.Flags().String("email","", "email for the app")
+	sniffCmd.Flags().String("username", "", "username for the app")
 }
