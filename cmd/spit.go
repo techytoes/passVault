@@ -18,8 +18,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"passVault/helpers"
 	"passVault/models"
+	"passVault/util"
 
 	"github.com/spf13/cobra"
 )
@@ -28,33 +28,29 @@ import (
 // spitCmd represents the spit command
 var spitCmd = &cobra.Command{
 	Use:   "spit",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Returns info regarding the particular credential",
+	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		config, err := util.LoadConfig(".")
+		if err != nil {
+			panic(err)
+		}
+
 		app, _ := cmd.Flags().GetString("app")
 		//username, _ := cmd.Flags().GetString("username")
 		// Opening JSON files
-		jsonText := helpers.ReadJson("creds.json")
+		jsonText := util.ReadJson("creds.json")
 
 		// Unmarshalling existing content of the JSON file
 		var credentials []models.Credential
 		if err := json.Unmarshal([]byte(jsonText), &credentials); err != nil {
 			panic(err)
 		}
-		fmt.Println(EncKey)
-		if len(EncKey) != 32 {
-			EncKey = "the-key-has-to-be-32-bytes-long!"
-		}
-		//fmt.Println(EncKey)
+
 		for i:=0; i<len(credentials); i++ {
 			if credentials[i].App == app {
 				fmt.Println(credentials[i].App, credentials[i].Email, credentials[i].Username)
-				plaintext, err := helpers.Decrypt(credentials[i].Password, []byte(EncKey))
+				plaintext, err := util.Decrypt(credentials[i].Password, []byte(config.EncryptKey))
 				if err != nil {
 					panic(err)
 				}

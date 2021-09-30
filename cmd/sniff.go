@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"passVault/helpers"
 	"passVault/models"
+	"passVault/util"
 )
 
 var (
@@ -32,35 +32,32 @@ var (
 // sniffCmd represents the sniff command
 var sniffCmd = &cobra.Command{
 	Use:   "sniff",
-	Short: "Fetch credential info related to an application",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Save credential information for a website/app",
+	Long: ``,
 
 	Run: func(cmd *cobra.Command, args []string) {
+		config, err := util.LoadConfig(".")
+		if err != nil {
+			panic(err)
+		}
 		// Get flag values
 		app, _ := cmd.Flags().GetString("app")
 		description, _ := cmd.Flags().GetString("desc")
 		username, _ := cmd.Flags().GetString("username")
 		email, _ := cmd.Flags().GetString("email")
 		password, _ := cmd.Flags().GetString("password")
+
 		// Opening JSON file
-		jsonText := helpers.ReadJson("creds.json")
+		jsonText := util.ReadJson("creds.json")
 
 		// Unmarshalling existing content of the JSON file
 		var credentials []models.Credential
 		if err := json.Unmarshal([]byte(jsonText), &credentials); err != nil {
 			panic(err)
 		}
-		if len(EncKey) != 32 {
-			EncKey = "the-key-has-to-be-32-bytes-long!"
-			EncKey = "chotu-shanti-suraj-28-1315-betul"
-		}
+
 		// Create encrypted password
-		encPassword, err := helpers.Encrypt([]byte(password), []byte(EncKey))
+		encPassword, err := util.Encrypt([]byte(password), []byte(config.EncryptKey))
 		if err != nil {
 			panic(err)
 		}
@@ -80,7 +77,7 @@ to quickly create a Cobra application.`,
 		result, _ := json.Marshal(credentials)
 
 		// Overwrite the JSON file with the new data.
-		helpers.OverwriteJson("creds.json", result)
+		util.OverwriteJson("creds.json", result)
 	},
 }
 
