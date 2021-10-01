@@ -24,11 +24,6 @@ import (
 	"passVault/util"
 )
 
-var (
-	password    string
-	description string
-)
-
 // sniffCmd represents the sniff command
 var sniffCmd = &cobra.Command{
 	Use:   "sniff",
@@ -44,7 +39,6 @@ var sniffCmd = &cobra.Command{
 		app, _ := cmd.Flags().GetString("app")
 		description, _ := cmd.Flags().GetString("desc")
 		username, _ := cmd.Flags().GetString("username")
-		email, _ := cmd.Flags().GetString("email")
 		password, _ := cmd.Flags().GetString("password")
 
 		// Opening JSON file
@@ -62,10 +56,15 @@ var sniffCmd = &cobra.Command{
 			panic(err)
 		}
 
+		// Create encrypted username
+		encUsername, err := util.Encrypt([]byte(username), []byte(config.EncryptKey))
+		if err != nil {
+			panic(err)
+		}
+
 		// Create new credential object
 		newCredential := models.Credential{
-			Email:       email,
-			Username:    username,
+			Username:    encUsername,
 			Password:    encPassword,
 			App:         app,
 			Description: description,
@@ -86,6 +85,5 @@ func init() {
 	sniffCmd.Flags().String("password", "", "password for the app")
 	sniffCmd.Flags().String("desc", "", "any description for the credential info")
 	sniffCmd.Flags().String("app", "", "application/website for the credential")
-	sniffCmd.Flags().String("email","", "email for the app")
 	sniffCmd.Flags().String("username", "", "username for the app")
 }

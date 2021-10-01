@@ -16,28 +16,24 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 )
-
-var EncKey string
 
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Initialize JSON file to store creds",
+	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		keyTerm, _ := cmd.Flags().GetString("key")
-		EncKey = keyTerm
+		err := ioutil.WriteFile("creds.json", []byte("[]"), 0755)
+		if err != nil {
+			fmt.Printf("Unable to write file: %v", err)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(initCmd)
-	initCmd.Flags().String("key", "", "Help message for toggle")
 }

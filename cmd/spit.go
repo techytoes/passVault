@@ -18,18 +18,17 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/atotto/clipboard"
+	"github.com/spf13/cobra"
 	"passVault/models"
 	"passVault/util"
-
-	"github.com/spf13/cobra"
 )
-
 
 // spitCmd represents the spit command
 var spitCmd = &cobra.Command{
 	Use:   "spit",
 	Short: "Returns info regarding the particular credential",
-	Long: ``,
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		config, err := util.LoadConfig(".")
 		if err != nil {
@@ -37,7 +36,8 @@ var spitCmd = &cobra.Command{
 		}
 
 		app, _ := cmd.Flags().GetString("app")
-		//username, _ := cmd.Flags().GetString("username")
+		username, _ := cmd.Flags().GetString("username")
+
 		// Opening JSON files
 		jsonText := util.ReadJson("creds.json")
 
@@ -47,18 +47,34 @@ var spitCmd = &cobra.Command{
 			panic(err)
 		}
 
-		for i:=0; i<len(credentials); i++ {
-			if credentials[i].App == app {
-				fmt.Println(credentials[i].App, credentials[i].Email, credentials[i].Username)
-				plaintext, err := util.Decrypt(credentials[i].Password, []byte(config.EncryptKey))
-				if err != nil {
-					panic(err)
-				}
-				pass := string(plaintext[:])
-				fmt.Println(pass)
-			}
+		if username == "" {
+			printAllCredForApp(app, credentials, config)
+		} else {
+			printCredForAppUsername(app, username, credentials, config)
 		}
 	},
+}
+
+func printCredForAppUsername(app string, username string, credentials []models.Credential, config util.Config) {
+	for i := 0; i < len(credentials); i++ {
+		decUsername, _ := util.Decrypt(credentials[i].Username, []byte(config.EncryptKey))
+		if credentials[i].App == app && string(decUsername[:]) == username {
+			decPassword, _ := util.Decrypt(credentials[i].Password, []byte(config.EncryptKey))
+			fmt.Println("App-Name:", app)
+			fmt.Println("Username:", username)
+			clipboard.WriteAll(string(decPassword[:]))
+		}
+	}
+}
+
+func printAllCredForApp(app string, credentials []models.Credential, config util.Config) {
+	for i := 0; i < len(credentials); i++ {
+		if credentials[i].App == app {
+			decUsername, _ := util.Decrypt(credentials[i].Username, []byte(config.EncryptKey))
+			fmt.Println("App-Name:", app)
+			fmt.Println("Username:", string(decUsername[:]))
+		}
+	}
 }
 
 func init() {
