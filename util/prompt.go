@@ -1,9 +1,9 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"github.com/manifoldco/promptui"
-	"github.com/pkg/errors"
 	"os"
 )
 

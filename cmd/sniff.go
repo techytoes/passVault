@@ -96,5 +96,6 @@ func getUsernamePassword() (string, string) {
 
 func init() {
 	rootCmd.AddCommand(sniffCmd)
+	sniffCmd.Flags().String("app", "", "Name for the app/website")
 	sniffCmd.Flags().String("desc", "", "any description for the credential info")
 }
