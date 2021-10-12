@@ -19,6 +19,9 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"io/ioutil"
+	"log"
+	"os"
+	"passVault/util"
 )
 
 // initCmd represents the init command
@@ -27,13 +30,34 @@ var initCmd = &cobra.Command{
 	Short: "Initialize JSON file to store creds",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := ioutil.WriteFile("creds.json", []byte("[]"), 0755)
+		dirname, err := os.UserHomeDir()
 		if err != nil {
+			log.Fatal( err )
+		}
+		// Create file to store creds
+		if err = ioutil.WriteFile(fmt.Sprintf("%s/creds.json", dirname), []byte("[]"), 0755) ; err != nil {
 			fmt.Printf("Unable to write file: %v", err)
 		}
+
+		encKey := getEncKey()
+		config := fmt.Sprintf("{\"enc_key\":\"%s\"}", string(encKey))
+		// Create file to store configs
+		if err = ioutil.WriteFile(fmt.Sprintf("%s/app.json", dirname), []byte(config), 0755) ; err != nil {
+			fmt.Printf("Unable to write file: %v", err)
+		}
+
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(initCmd)
+}
+
+func getEncKey() string {
+	encKeyPromptContent := util.PromptContent{
+		ErrorMsg: "Please provide a valid Encryption Key",
+		Label:    "What is the Encryption Key for this application?",
+	}
+	encKey := util.PromptGetInput(encKeyPromptContent)
+	return encKey
 }

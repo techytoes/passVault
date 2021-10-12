@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/atotto/clipboard"
 	"github.com/spf13/cobra"
+	"os"
 	"passVault/models"
 	"passVault/util"
 )
@@ -30,16 +31,16 @@ var spitCmd = &cobra.Command{
 	Short: "Returns info regarding the particular credential",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		config, err := util.LoadConfig(".")
+		dirname, err := os.UserHomeDir()
+		config, err := util.LoadConfig(dirname)
 		if err != nil {
 			panic(err)
 		}
-
 		app, _ := cmd.Flags().GetString("app")
 		username, _ := cmd.Flags().GetString("username")
 
 		// Opening JSON files
-		jsonText := util.ReadJson("creds.json")
+		jsonText := util.ReadJson(fmt.Sprintf("%s/creds.json", dirname))
 
 		// Unmarshalling existing content of the JSON file
 		var credentials []models.Credential

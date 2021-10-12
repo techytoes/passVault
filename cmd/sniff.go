@@ -17,11 +17,14 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
+	"os"
 	"time"
 
-	"github.com/spf13/cobra"
 	"passVault/models"
 	"passVault/util"
+
+	"github.com/spf13/cobra"
 )
 
 // sniffCmd represents the sniff command
@@ -31,7 +34,8 @@ var sniffCmd = &cobra.Command{
 	Long:  ``,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		config, err := util.LoadConfig(".")
+		dirname, err := os.UserHomeDir()
+		config, err := util.LoadConfig(dirname)
 		if err != nil {
 			panic(err)
 		}
@@ -41,7 +45,7 @@ var sniffCmd = &cobra.Command{
 		username, password := getUsernamePassword()
 
 		// Opening JSON file
-		jsonText := util.ReadJson("creds.json")
+		jsonText := util.ReadJson(fmt.Sprintf("%s/creds.json", dirname))
 
 		// Unmarshalling existing content of the JSON file
 		var credentials []models.Credential
@@ -75,7 +79,7 @@ var sniffCmd = &cobra.Command{
 		result, _ := json.Marshal(credentials)
 
 		// Overwrite the JSON file with the new data.
-		util.OverwriteJson("creds.json", result)
+		util.OverwriteJson(fmt.Sprintf("%s/creds.json", dirname), result)
 	},
 }
 
