@@ -2,19 +2,20 @@
 
 #### Steps:
 
-1. Run `init` command to create `creds.json` file.
-2. Rename `sample-app.env` to `app.env` and set `ENC_KEY` variable. Remember to keep this string of length 32.
-3. Use `sniff` command to create new credentials.
-4. Use `spit` command to fetch credentials.
+1. Run `init` command to create `creds.json` and `app.json` file in home directory.
+2. Use `sniff` command to create new credentials.
+3. Use `spit` command to fetch credentials.
 
 #### Commands:
 
-1. Initialize a new JSON file for storing credentials.
+1. Initialize a new JSON file for storing credentials and a config file for storing app-level configs.
 ```
 passvault init
 ```
+Note: This command prompts to input a 32 byte string which would be used as an encryption key.
+throughout the project.
 
-3. Create a new credential using this command.
+2. Create a new credential using this command.
 
 ```
 passvault sniff --app=<app/website>  --desc=<desc>
