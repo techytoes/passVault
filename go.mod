@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/atotto/clipboard v0.1.4
+	github.com/manifoldco/promptui v0.8.0
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 )
@@ -16,7 +17,6 @@ require (
 	github.com/juju/ansiterm v0.0.0-20180109212912-720a0952cc2a // indirect
 	github.com/lunixbochs/vtclean v0.0.0-20180621232353-2d01aacdc34a // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
-	github.com/manifoldco/promptui v0.8.0 // indirect
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect

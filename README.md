@@ -1,5 +1,10 @@
 ### PassVault: Smart password manager.
 
+#### Installation:
+```
+go get github.com/techytoes/passVault
+```
+
 #### Steps:
 
 1. Run `init` command to create `creds.json` and `app.json` file in home directory.
