@@ -1,4 +1,4 @@
-module passVault
+module github.com/techytoes/passVault
 
 go 1.17
 
