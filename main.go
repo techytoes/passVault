@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "passVault/cmd"
+import "github.com/techytoes/passVault/cmd"
 
 func main() {
 	cmd.Execute()

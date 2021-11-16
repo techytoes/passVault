@@ -21,8 +21,8 @@ import (
 	"os"
 	"time"
 
-	"passVault/models"
-	"passVault/util"
+	"github.com/techytoes/passVault/models"
+	"github.com/techytoes/passVault/util"
 
 	"github.com/spf13/cobra"
 )
@@ -35,6 +35,9 @@ var sniffCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		dirname, err := os.UserHomeDir()
+		if err != nil {
+			panic(err)
+		}
 		config, err := util.LoadConfig(dirname)
 		if err != nil {
 			panic(err)

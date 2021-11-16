@@ -18,11 +18,12 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/atotto/clipboard"
 	"github.com/spf13/cobra"
-	"os"
-	"passVault/models"
-	"passVault/util"
+	"github.com/techytoes/passVault/models"
+	"github.com/techytoes/passVault/util"
 )
 
 // spitCmd represents the spit command
@@ -32,6 +33,9 @@ var spitCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		dirname, err := os.UserHomeDir()
+		if err != nil {
+			panic(err)
+		}
 		config, err := util.LoadConfig(dirname)
 		if err != nil {
 			panic(err)
