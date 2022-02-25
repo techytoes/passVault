@@ -5,6 +5,12 @@
 go get github.com/techytoes/passVault
 ```
 
+Note: You might need to add bin path in the `.zshrc` file.
+
+```
+export PATH=$PATH:$(go env GOPATH)/bin
+```
+
 #### Steps:
 
 1. Run `init` command to create `creds.json` and `app.json` file in home directory.
