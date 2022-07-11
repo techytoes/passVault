@@ -41,7 +41,13 @@ Note: `desc` is nullable field.
 passvault spit --app=<app/website>
 ```
 
-4. Return password when a app and username combination is provided.
+4. Print all apps whose creds are present.
+
+```
+passvault list
+```
+
+5. Return password when a app and username combination is provided.
 
 ```
 passvault spit --app=<app/website> --username=<username/email>
