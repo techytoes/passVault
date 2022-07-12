@@ -9,4 +9,5 @@ type Credential struct {
 	Description string    `json:"description"`
 	Created     time.Time `json:"created"`
 	LastUsed    time.Time `json:"lastUsed"`
+	Version     int16     `json:"version"`
 }

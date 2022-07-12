@@ -76,6 +76,7 @@ var sniffCmd = &cobra.Command{
 			Description: description,
 			Created:     time.Now(),
 			LastUsed:    time.Now(),
+			Version:     1,
 		}
 		credentials = append(credentials, newCredential)
 		// now Marshal it
@@ -95,9 +96,18 @@ func getUsernamePassword() (string, string) {
 
 	passwordPromptContent := util.PromptContent{
 		ErrorMsg: "Please provide a valid password.",
-		Label:    "What is the password for this application?",
+		Label:    "Please provide a valid password.",
 	}
-	password := util.PromptGetInput(passwordPromptContent)
+	password := util.PromptGetSecretInput(passwordPromptContent)
+
+	passwordPromptAgainContent := util.PromptContent{
+		ErrorMsg: "Please provide password again",
+		Label:    "Please provide password again",
+	}
+	passwordAgain := util.PromptGetSecretInput(passwordPromptAgainContent)
+	if password != passwordAgain {
+		panic("Passwords don't match!!")
+	}
 	return username, password
 }
 
