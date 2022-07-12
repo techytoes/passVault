@@ -59,6 +59,6 @@ func getEncKey() string {
 		ErrorMsg: "Please provide a valid Encryption Key",
 		Label:    "What is the Encryption Key for this application?",
 	}
-	encKey := util.PromptGetInput(encKeyPromptContent)
+	encKey := util.PromptGetInput(encKeyPromptContent, true)
 	return encKey
 }
