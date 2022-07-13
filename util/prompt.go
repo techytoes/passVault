@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/manifoldco/promptui"
+	"github.com/techytoes/passVault/models"
 )
 
 type PromptContent struct {
@@ -58,4 +59,30 @@ func getPromptHelper(
 		Templates: templates,
 		Validate:  validate,
 	}
+}
+
+func GetUsernamePassword() (models.UserCredential, error) {
+	usernamePromptContent := PromptContent{
+		ErrorMsg: "Please provide a valid username.",
+		Label:    "What is the username for this application?",
+	}
+	username := PromptGetInput(usernamePromptContent, false)
+
+	passwordPromptContent := PromptContent{
+		ErrorMsg: "Please provide a valid password.",
+		Label:    "Please provide a valid password.",
+	}
+	password := PromptGetInput(passwordPromptContent, true)
+
+	passwordPromptAgainContent := PromptContent{
+		ErrorMsg: "Please provide password again",
+		Label:    "Please provide password again",
+	}
+	passwordAgain := PromptGetInput(passwordPromptAgainContent, true)
+	if password != passwordAgain {
+		return models.UserCredential{}, fmt.Errorf("passwords don't match!! please try again")
+	}
+	return models.UserCredential{
+		Username: []byte(username),
+		Password: []byte(password)}, nil
 }
