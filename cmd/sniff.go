@@ -27,6 +27,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type UserCredential struct {
+	username string
+	password string
+}
+
 // sniffCmd represents the sniff command
 var sniffCmd = &cobra.Command{
 	Use:   "sniff",
@@ -36,16 +41,22 @@ var sniffCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		dirname, err := os.UserHomeDir()
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			return
 		}
 		config, err := util.LoadConfig(dirname)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			return
 		}
 		// Get flag values
 		app, _ := cmd.Flags().GetString("app")
 		description, _ := cmd.Flags().GetString("desc")
-		username, password := getUsernamePassword()
+		userCredential, err := getUsernamePassword()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
 		// Opening JSON file
 		jsonText := util.ReadJson(fmt.Sprintf("%s/creds.json", dirname))
@@ -53,19 +64,22 @@ var sniffCmd = &cobra.Command{
 		// Unmarshalling existing content of the JSON file
 		var credentials []models.Credential
 		if err := json.Unmarshal([]byte(jsonText), &credentials); err != nil {
-			panic(err)
+			fmt.Println(err)
+			return
 		}
 
 		// Create encrypted password
-		encPassword, err := util.Encrypt([]byte(password), []byte(config.EncryptKey))
+		encPassword, err := util.Encrypt([]byte(userCredential.password), []byte(config.EncryptKey))
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			return
 		}
 
 		// Create encrypted username
-		encUsername, err := util.Encrypt([]byte(username), []byte(config.EncryptKey))
+		encUsername, err := util.Encrypt([]byte(userCredential.username), []byte(config.EncryptKey))
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			return
 		}
 
 		// Create new credential object
@@ -87,28 +101,28 @@ var sniffCmd = &cobra.Command{
 	},
 }
 
-func getUsernamePassword() (string, string) {
+func getUsernamePassword() (UserCredential, error) {
 	usernamePromptContent := util.PromptContent{
 		ErrorMsg: "Please provide a valid username.",
 		Label:    "What is the username for this application?",
 	}
-	username := util.PromptGetInput(usernamePromptContent)
+	username := util.PromptGetInput(usernamePromptContent, false)
 
 	passwordPromptContent := util.PromptContent{
 		ErrorMsg: "Please provide a valid password.",
 		Label:    "Please provide a valid password.",
 	}
-	password := util.PromptGetSecretInput(passwordPromptContent)
+	password := util.PromptGetInput(passwordPromptContent, true)
 
 	passwordPromptAgainContent := util.PromptContent{
 		ErrorMsg: "Please provide password again",
 		Label:    "Please provide password again",
 	}
-	passwordAgain := util.PromptGetSecretInput(passwordPromptAgainContent)
+	passwordAgain := util.PromptGetInput(passwordPromptAgainContent, true)
 	if password != passwordAgain {
-		panic("Passwords don't match!!")
+		return UserCredential{}, fmt.Errorf("passwords don't match!! please try again")
 	}
-	return username, password
+	return UserCredential{username, password}, nil
 }
 
 func init() {
