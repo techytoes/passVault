@@ -1,17 +1,6 @@
 /*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
 */
 package cmd
 
@@ -21,18 +10,16 @@ import (
 	"os"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/techytoes/passVault/models"
 	"github.com/techytoes/passVault/util"
-
-	"github.com/spf13/cobra"
 )
 
-// sniffCmd represents the sniff command
-var sniffCmd = &cobra.Command{
-	Use:   "sniff",
-	Short: "Save credential information for a website/app",
+// shrugCmd represents the shrug command
+var shrugCmd = &cobra.Command{
+	Use:   "shrug",
+	Short: "Update credential information for a website/app",
 	Long:  ``,
-
 	Run: func(cmd *cobra.Command, args []string) {
 		dirname, err := os.UserHomeDir()
 		if err != nil {
@@ -77,6 +64,13 @@ var sniffCmd = &cobra.Command{
 			return
 		}
 
+		//finds the latest version for the app password
+		newCredsVersion := 1
+		for i := 0; i < len(credentials); i++ {
+			if credentials[i].App == app {
+				newCredsVersion += 1
+			}
+		}
 		// Create new credential object
 		newCredential := models.Credential{
 			Username:    encUsername,
@@ -85,7 +79,7 @@ var sniffCmd = &cobra.Command{
 			Description: description,
 			Created:     time.Now(),
 			LastUsed:    time.Now(),
-			Version:     1,
+			Version:     int16(newCredsVersion),
 		}
 		credentials = append(credentials, newCredential)
 		// now Marshal it
@@ -97,7 +91,7 @@ var sniffCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(sniffCmd)
-	sniffCmd.Flags().String("app", "", "Name for the app/website")
-	sniffCmd.Flags().String("desc", "", "any description for the credential info")
+	rootCmd.AddCommand(shrugCmd)
+	shrugCmd.Flags().String("app", "", "Name for the app/website")
+	shrugCmd.Flags().String("desc", "", "any description for the credential info")
 }

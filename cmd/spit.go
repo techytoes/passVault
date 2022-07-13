@@ -61,15 +61,22 @@ var spitCmd = &cobra.Command{
 }
 
 func printCredForAppUsername(app string, username string, credentials []models.Credential, config util.Config) {
+	idx := -1
 	for i := 0; i < len(credentials); i++ {
 		decUsername, _ := util.Decrypt(credentials[i].Username, []byte(config.EncryptKey))
 		if credentials[i].App == app && string(decUsername[:]) == username {
-			decPassword, _ := util.Decrypt(credentials[i].Password, []byte(config.EncryptKey))
-			fmt.Println("App-Name:", app)
-			fmt.Println("Username:", username)
-			clipboard.WriteAll(string(decPassword[:]))
+			idx = i
 		}
 	}
+
+	if idx == -1 {
+		panic("Creds not present for this app/username")
+	}
+
+	decPassword, _ := util.Decrypt(credentials[idx].Password, []byte(config.EncryptKey))
+	fmt.Println("App-Name:", app)
+	fmt.Println("Username:", username)
+	clipboard.WriteAll(string(decPassword[:]))
 }
 
 func printAllCredForApp(app string, credentials []models.Credential, config util.Config) {

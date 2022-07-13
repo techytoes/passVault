@@ -11,3 +11,8 @@ type Credential struct {
 	LastUsed    time.Time `json:"lastUsed"`
 	Version     int16     `json:"version"`
 }
+
+type UserCredential struct {
+	Username []byte `json:"username"`
+	Password []byte `json:"password"`
+}
